@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: username
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: default_database
+      POSTGRES_DB: recall
     volumes:
       - pgdata:/var/lib/postgresql/recalldata
 
