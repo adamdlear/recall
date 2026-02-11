@@ -5,9 +5,12 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER: username
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: recall
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: 5432
+      DB_SCHEMA: ${DB_SCHEMA}
     volumes:
       - pgdata:/var/lib/postgresql/recalldata
 
