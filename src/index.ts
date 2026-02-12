@@ -4,7 +4,7 @@ import { staticPlugin } from '@elysiajs/static'
 const app = new Elysia()
   .use(
     await staticPlugin({
-      prefix: '/'
+      prefix: "/",
     })
   )
   .get('/api/hello', () => ({

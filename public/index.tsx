@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import './global.css'
+
+import '@public/global.css'
 
 function App() {
   const [count, setCount] = useState(0)
