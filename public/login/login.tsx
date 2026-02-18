@@ -7,7 +7,7 @@ import { authClient } from "../lib/auth-client";
 function App() {
 	const handleClick = async () => {
 		console.log("trying to sign in")
-		await authClient.signIn.social({ provider: "github" })
+		await authClient.signIn.social({ provider: "github", callbackURL: "/public" })
 	}
 	return (
 		<main className="min-h-screen flex items-center justify-center bg-gray-100">
