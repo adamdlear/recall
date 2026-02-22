@@ -8,7 +8,8 @@
 		"generate-routes": "tsr generate",
 		"watch-routes": "tsr watch",
 		"db:seed": "bun run ./src/db/seed.ts",
-		"db:migrate": "bun drizzle-kit push"
+		"db:migrate": "bun drizzle-kit push",
+		"format": "biome format --write ."
 	},
 	"dependencies": {
 		"@better-auth/drizzle-adapter": "^1.5.0-beta.9",
@@ -36,6 +37,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.14",
+		"@tanstack/react-query-devtools": "^5.91.3",
 		"@tanstack/router-cli": "^1.162.2",
 		"@types/react": "^19.2.13",
 		"@types/react-dom": "^19.2.3",
