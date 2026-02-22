@@ -1,5 +1,5 @@
-import { db } from "@/src/db";
-import { quizzes } from "@/src/db/schema/quizzes";
+import { db } from "@/server/db";
+import { quizzes } from "@/server/db/schema/quizzes";
 import { eq } from "drizzle-orm";
 
 export class QuizzesService {
