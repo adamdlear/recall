@@ -44,6 +44,7 @@
 		"bun-plugin-tailwind": "^0.1.2",
 		"bun-types": "latest",
 		"drizzle-kit": "^0.31.9",
+		"lefthook": "^2.1.1",
 		"tsx": "^4.21.0"
 	},
 	"module": "src/index.js"
