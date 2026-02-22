@@ -1,6 +1,6 @@
 import type { Context } from "elysia";
 import { Elysia } from "elysia";
-import { auth } from "../lib/auth";
+import { auth } from "../../lib/auth";
 
 const betterAuthView = (context: Context) => {
   const BETTER_AUTH_ACCEPT_METHODS = ["POST", "GET"]
@@ -14,4 +14,4 @@ const betterAuthView = (context: Context) => {
 
 const authService = new Elysia().all("/api/auth/*", betterAuthView);
 
-export { authService };
+export { authService as auth };
