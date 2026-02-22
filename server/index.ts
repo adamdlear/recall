@@ -1,8 +1,9 @@
 import { cors } from '@elysiajs/cors';
-import { staticPlugin } from "@elysiajs/static";
 import { Elysia } from "elysia";
 import { auth } from './modules/auth';
 import { quizzes } from './modules/quizzes';
+import openapi from '@elysiajs/openapi';
+import { OpenAPI } from './lib/auth';
 
 const app = new Elysia()
 	.use(
@@ -12,17 +13,18 @@ const app = new Elysia()
 		})
 	)
 	.use(
-		await staticPlugin(),
+		openapi({
+			documentation: {
+				components: await OpenAPI.components,
+				paths: await OpenAPI.getPaths()
+			}
+		})
 	)
 	.use(auth)
 	.use(quizzes)
 	.get("/api/hello", () => ({
 		message: "Hello from Elysia 🚀",
 	}))
-	.listen(3000);
 
-console.log(
-	`🦊 Elysia is running at ${app.server?.protocol}://${app.server?.hostname}:${app.server?.port}`,
-);
-
+export { app as apiRouter };
 export type App = typeof app;

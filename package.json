@@ -4,7 +4,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "bun --parallel watch-routes server",
-		"server": "bun --watch server/index.ts",
+		"server": "bun --watch app.ts",
 		"generate-routes": "tsr generate",
 		"watch-routes": "tsr watch",
 		"db:seed": "bun run ./src/db/seed.ts",
