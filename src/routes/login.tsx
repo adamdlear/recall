@@ -2,7 +2,7 @@ import { Button } from "@/src/components/ui/button";
 import { authClient } from "@/src/lib/auth-client";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/public/login/")({
+export const Route = createFileRoute("/login")({
 	component: RouteComponent,
 });
 
@@ -11,9 +11,9 @@ function RouteComponent() {
 		console.log("trying to sign in");
 		await authClient.signIn.social({
 			provider: "github",
-			callbackURL: "/public",
-		});
-	};
+			callbackURL: window.location.origin + "/",
+		})
+	}
 	return (
 		<main className="min-h-screen flex items-center justify-center bg-gray-100">
 			<div className="p-8 bg-white shadow-md rounded-lg">
@@ -48,5 +48,5 @@ function RouteComponent() {
 				</Button>
 			</div>
 		</main>
-	);
+	)
 }

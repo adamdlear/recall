@@ -1,8 +1,7 @@
 import { cors } from "@elysiajs/cors";
 import openapi from "@elysiajs/openapi";
 import { Elysia } from "elysia";
-import { OpenAPI } from "./lib/auth";
-import { auth } from "./modules/auth";
+import { OpenAPI, auth } from "./lib/auth";
 import { quizzes } from "./modules/quizzes";
 
 const app = new Elysia()
@@ -20,7 +19,8 @@ const app = new Elysia()
 			},
 		}),
 	)
-	.use(auth)
+	.get("/api/auth/*", ({ request }) => auth.handler(request))
+	.post("/api/auth/*", ({ request }) => auth.handler(request))
 	.use(quizzes)
 	.get("/api/hello", () => ({
 		message: "Hello from Elysia 🚀",

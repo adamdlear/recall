@@ -1,17 +1,20 @@
-import Elysia from "elysia";
+import { Elysia } from "elysia";
+import { staticPlugin } from "@elysiajs/static";
 import { apiRouter } from "./server";
 
-const app = new Elysia()
-	.use(apiRouter)
-	.onError(({ code, request }) => {
-		if (code === "NOT_FOUND" && !new URL(request.url).pathname.startsWith("/api/")) {
-			return new Response(Bun.file("public/index.html"), {
-				headers: { "Content-Type": "text/html" },
-			});
-		}
-	})
-	.listen(3000);
+const hasDist = await Bun.file("dist/index.html").exists();
 
-console.log(
-	`🦊 Elysia is running at ${app.server?.protocol}://${app.server?.hostname}:${app.server?.port}`,
-);
+const app = hasDist
+	? new Elysia()
+			.use(apiRouter)
+			.use(staticPlugin({ assets: "dist", prefix: "/" }))
+			.onError(({ code, set }) => {
+				if (code === "NOT_FOUND") {
+					set.status = 200;
+					return Bun.file("dist/index.html");
+				}
+			})
+	: new Elysia().use(apiRouter);
+
+app.listen(3000);
+console.log(`🦊 Elysia is running at http://localhost:3000`);

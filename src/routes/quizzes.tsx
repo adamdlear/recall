@@ -3,7 +3,7 @@ import { app } from "@/src/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/public/quizzes/")({
+export const Route = createFileRoute("/quizzes")({
 	component: RouteComponent,
 });
 
@@ -13,7 +13,7 @@ function RouteComponent() {
 		queryFn: async () => {
 			return await app.api.quizzes.get();
 		},
-	});
+	})
 
 	return (
 		<div>
@@ -94,5 +94,5 @@ function RouteComponent() {
 				</div>
 			</section>
 		</div>
-	);
+	)
 }

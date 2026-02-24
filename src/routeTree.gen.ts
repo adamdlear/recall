@@ -9,86 +9,86 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PublicIndexRouteImport } from './routes/public/index'
-import { Route as PublicQuizzesIndexRouteImport } from './routes/public/quizzes/index'
-import { Route as PublicLoginIndexRouteImport } from './routes/public/login/index'
+import { Route as QuizzesRouteImport } from './routes/quizzes'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as IndexRouteImport } from './routes/index'
 
-const PublicIndexRoute = PublicIndexRouteImport.update({
-  id: '/public/',
-  path: '/public/',
+const QuizzesRoute = QuizzesRouteImport.update({
+  id: '/quizzes',
+  path: '/quizzes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublicQuizzesIndexRoute = PublicQuizzesIndexRouteImport.update({
-  id: '/public/quizzes/',
-  path: '/public/quizzes/',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublicLoginIndexRoute = PublicLoginIndexRouteImport.update({
-  id: '/public/login/',
-  path: '/public/login/',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/public/': typeof PublicIndexRoute
-  '/public/login/': typeof PublicLoginIndexRoute
-  '/public/quizzes/': typeof PublicQuizzesIndexRoute
+  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/quizzes': typeof QuizzesRoute
 }
 export interface FileRoutesByTo {
-  '/public': typeof PublicIndexRoute
-  '/public/login': typeof PublicLoginIndexRoute
-  '/public/quizzes': typeof PublicQuizzesIndexRoute
+  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/quizzes': typeof QuizzesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/public/': typeof PublicIndexRoute
-  '/public/login/': typeof PublicLoginIndexRoute
-  '/public/quizzes/': typeof PublicQuizzesIndexRoute
+  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/quizzes': typeof QuizzesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/public/' | '/public/login/' | '/public/quizzes/'
+  fullPaths: '/' | '/login' | '/quizzes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/public' | '/public/login' | '/public/quizzes'
-  id: '__root__' | '/public/' | '/public/login/' | '/public/quizzes/'
+  to: '/' | '/login' | '/quizzes'
+  id: '__root__' | '/' | '/login' | '/quizzes'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  PublicIndexRoute: typeof PublicIndexRoute
-  PublicLoginIndexRoute: typeof PublicLoginIndexRoute
-  PublicQuizzesIndexRoute: typeof PublicQuizzesIndexRoute
+  IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
+  QuizzesRoute: typeof QuizzesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/public/': {
-      id: '/public/'
-      path: '/public'
-      fullPath: '/public/'
-      preLoaderRoute: typeof PublicIndexRouteImport
+    '/quizzes': {
+      id: '/quizzes'
+      path: '/quizzes'
+      fullPath: '/quizzes'
+      preLoaderRoute: typeof QuizzesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/public/quizzes/': {
-      id: '/public/quizzes/'
-      path: '/public/quizzes'
-      fullPath: '/public/quizzes/'
-      preLoaderRoute: typeof PublicQuizzesIndexRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/public/login/': {
-      id: '/public/login/'
-      path: '/public/login'
-      fullPath: '/public/login/'
-      preLoaderRoute: typeof PublicLoginIndexRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  PublicIndexRoute: PublicIndexRoute,
-  PublicLoginIndexRoute: PublicLoginIndexRoute,
-  PublicQuizzesIndexRoute: PublicQuizzesIndexRoute,
+  IndexRoute: IndexRoute,
+  LoginRoute: LoginRoute,
+  QuizzesRoute: QuizzesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

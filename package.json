@@ -3,10 +3,13 @@
 	"version": "1.0.50",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "bun --parallel watch-routes server",
-		"server": "bun --watch app.ts",
-		"generate-routes": "tsr generate",
+		"dev": "bun --parallel watch-routes dev:api dev:client",
+		"dev:api": "bun --watch app.ts",
+		"dev:client": "vite",
 		"watch-routes": "tsr watch",
+		"build": "tsr generate && vite build",
+		"start": "bun run app.ts",
+		"generate-routes": "tsr generate",
 		"db:seed": "bun run ./src/db/seed.ts",
 		"db:migrate": "bun drizzle-kit push",
 		"format": "biome format --write ."
@@ -37,15 +40,18 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.14",
+		"@tailwindcss/vite": "^4.2.1",
 		"@tanstack/react-query-devtools": "^5.91.3",
 		"@tanstack/router-cli": "^1.162.2",
 		"@types/react": "^19.2.13",
 		"@types/react-dom": "^19.2.3",
+		"@vitejs/plugin-react": "^5.1.4",
 		"bun-plugin-tailwind": "^0.1.2",
 		"bun-types": "latest",
 		"drizzle-kit": "^0.31.9",
 		"lefthook": "^2.1.1",
-		"tsx": "^4.21.0"
+		"tsx": "^4.21.0",
+		"vite": "^7.3.1"
 	},
 	"module": "src/index.js"
 }
