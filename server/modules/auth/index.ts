@@ -2,16 +2,21 @@ import type { Context } from "elysia";
 import { Elysia } from "elysia";
 import { auth } from "../../lib/auth";
 
-const betterAuthView = (context: Context) => {
+const betterAuthView = async (context: Context) => {
 	const BETTER_AUTH_ACCEPT_METHODS = ["POST", "GET"];
 	// validate request method
 	if (BETTER_AUTH_ACCEPT_METHODS.includes(context.request.method)) {
-		return auth.handler(context.request);
+		const response = await auth.handler(context.request);
+		console.log("BETTER-AUTH REQUEST", context.request)
+		console.log("BETTER-AUTH REPONSE", response)
+		return response
 	} else {
 		context.error(405);
 	}
 };
 
-const authService = new Elysia().all("/api/auth/*", betterAuthView);
+const authService = new Elysia()
+	.get("/api/auth/*", betterAuthView)
+	.post("/api/auth/*", betterAuthView)
 
 export { authService as auth };

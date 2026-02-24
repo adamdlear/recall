@@ -1,12 +1,15 @@
-import staticPlugin from "@elysiajs/static";
 import Elysia from "elysia";
-import indexHtml from "public/index.html";
 import { apiRouter } from "./server";
 
 const app = new Elysia()
 	.use(apiRouter)
-	.use(await staticPlugin())
-	.get("/*", indexHtml)
+	.onError(({ code, request }) => {
+		if (code === "NOT_FOUND" && !new URL(request.url).pathname.startsWith("/api/")) {
+			return new Response(Bun.file("public/index.html"), {
+				headers: { "Content-Type": "text/html" },
+			});
+		}
+	})
 	.listen(3000);
 
 console.log(

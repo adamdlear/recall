@@ -1,9 +1,9 @@
 import { cors } from "@elysiajs/cors";
+import openapi from "@elysiajs/openapi";
 import { Elysia } from "elysia";
+import { OpenAPI } from "./lib/auth";
 import { auth } from "./modules/auth";
 import { quizzes } from "./modules/quizzes";
-import openapi from "@elysiajs/openapi";
-import { OpenAPI } from "./lib/auth";
 
 const app = new Elysia()
 	.use(
