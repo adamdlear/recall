@@ -1,12 +1,14 @@
 "use client"
 
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { Book } from "@/server/modules/books/model"
 import { ArrowRight } from "lucide-react"
 
 export function BookCard({ book }: { book: Book }) {
   return (
-    <a
-      href={`/books/${book.id}`}
+    <Link
+      to="/books/$id"
+      params={{ id: book.id }}
       className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
     >
       <div
@@ -30,7 +32,7 @@ export function BookCard({ book }: { book: Book }) {
           </span>
         </div>
       </div>
-    </a>
+    </Link>
   )
 }
 

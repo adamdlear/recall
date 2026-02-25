@@ -9,15 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as QuizzesRouteImport } from './routes/quizzes'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BooksIdRouteImport } from './routes/books.$id'
 
-const QuizzesRoute = QuizzesRouteImport.update({
-  id: '/quizzes',
-  path: '/quizzes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -28,46 +23,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BooksIdRoute = BooksIdRouteImport.update({
+  id: '/books/$id',
+  path: '/books/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/quizzes': typeof QuizzesRoute
+  '/books/$id': typeof BooksIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/quizzes': typeof QuizzesRoute
+  '/books/$id': typeof BooksIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/quizzes': typeof QuizzesRoute
+  '/books/$id': typeof BooksIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/quizzes'
+  fullPaths: '/' | '/login' | '/books/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/quizzes'
-  id: '__root__' | '/' | '/login' | '/quizzes'
+  to: '/' | '/login' | '/books/$id'
+  id: '__root__' | '/' | '/login' | '/books/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
-  QuizzesRoute: typeof QuizzesRoute
+  BooksIdRoute: typeof BooksIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/quizzes': {
-      id: '/quizzes'
-      path: '/quizzes'
-      fullPath: '/quizzes'
-      preLoaderRoute: typeof QuizzesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -82,13 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/books/$id': {
+      id: '/books/$id'
+      path: '/books/$id'
+      fullPath: '/books/$id'
+      preLoaderRoute: typeof BooksIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
-  QuizzesRoute: QuizzesRoute,
+  BooksIdRoute: BooksIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

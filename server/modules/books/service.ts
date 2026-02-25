@@ -8,7 +8,8 @@ export class BooksService {
   }
 
   static async getBookById(id: string) {
-    return await db.select().from(books).where(eq(books.id, id));
+    const results = await db.select().from(books).where(eq(books.id, id)).limit(1);
+    return results[0];
   }
 }
 

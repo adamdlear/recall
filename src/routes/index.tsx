@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Award, BookOpen, Brain } from 'lucide-react'
-import { BookCard } from '../components/books/book-card'
+import { BooksGrid } from '../components/books/books-grid'
 import { app } from '../lib/api'
 
 export const Route = createFileRoute('/')({
@@ -12,11 +12,10 @@ function RouteComponent() {
   const { data, isLoading } = useQuery({
     queryKey: ["books"],
     queryFn: async () => {
-      return (await app.api.books.get()).data
+      const res = await app.api.books.get()
+      return res.data
     }
   })
-
-  const categories = [...new Set(data?.map(b => b.category))]
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,30 +72,7 @@ function RouteComponent() {
 
         {/* Book Grid */}
         <section className="mx-auto max-w-6xl px-6 py-12 md:py-16">
-          <div className="flex flex-col gap-10">
-            {categories.map((category) => (
-              <div key={category}>
-                <div className="mb-5 flex items-center gap-3">
-                  <h2 className="font-serif text-xl font-bold text-foreground">
-                    {category}
-                  </h2>
-                  <div className="h-px flex-1 bg-border" />
-                  <span className="text-xs font-medium text-muted-foreground">
-                    {data?.filter((b) => b.category === category).length}{" "}
-                    {data?.filter((b) => b.category === category).length === 1
-                      ? "book"
-                      : "books"}
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {data?.filter((b) => b.category === category)
-                    .map((book) => (
-                      <BookCard key={book.id} book={book} />
-                    ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          <BooksGrid books={data} isLoading={isLoading} />
         </section>
       </main>
     </div>
