@@ -13,10 +13,20 @@ export function BookCard({ book }: { book: Book }) {
       className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
     >
       <div
-        className="flex h-40 items-end p-5"
+        className="relative flex h-40 items-end overflow-hidden p-5"
         style={{ backgroundColor: bookColor(book.title) }}
       >
-        <h3 className="font-serif text-xl font-bold leading-tight text-white text-balance">
+        {book.coverUrl && (
+          <>
+            <img
+              src={book.coverUrl}
+              alt={book.title}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          </>
+        )}
+        <h3 className="relative font-serif text-xl font-bold leading-tight text-white text-balance">
           {book.title}
         </h3>
       </div>

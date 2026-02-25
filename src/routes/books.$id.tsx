@@ -85,24 +85,42 @@ function RouteComponent() {
               <ArrowLeft className="h-3.5 w-3.5" />
               Back to Library
             </Link>
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20">
-                  <BookOpen className="h-5 w-5 text-white" />
+            <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-12">
+              {/* Text content */}
+              <div className="flex flex-col gap-4 md:flex-1">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20">
+                    <BookOpen className="h-5 w-5 text-white" />
+                  </div>
+                </div>
+                <h1 className="font-serif text-3xl font-black leading-tight text-white md:text-4xl text-balance">
+                  {book.title}
+                </h1>
+                <p className="text-base text-white/70">by {book.author}</p>
+                <p className="max-w-xl text-sm leading-relaxed text-white/80">
+                  {book.description}
+                </p>
+                <div className="mt-1 flex items-center gap-4 text-sm text-white/60">
+                  <span className="flex items-center gap-1.5">
+                    <HelpCircle className="h-4 w-4" />
+                    {totalQuestions} questions total
+                  </span>
                 </div>
               </div>
-              <h1 className="font-serif text-3xl font-black leading-tight text-white md:text-4xl text-balance">
-                {book.title}
-              </h1>
-              <p className="text-base text-white/70">by {book.author}</p>
-              <p className="max-w-xl text-sm leading-relaxed text-white/80">
-                {book.description}
-              </p>
-              <div className="mt-1 flex items-center gap-4 text-sm text-white/60">
-                <span className="flex items-center gap-1.5">
-                  <HelpCircle className="h-4 w-4" />
-                  {totalQuestions} questions total
-                </span>
+
+              {/* Cover image — stacks above text on mobile, floats right on desktop */}
+              <div className="order-first shrink-0 md:order-last">
+                {book.coverUrl ? (
+                  <img
+                    src={book.coverUrl}
+                    alt={book.title}
+                    className="h-48 w-32 rounded-lg object-cover shadow-xl md:h-60 md:w-40"
+                  />
+                ) : (
+                  <div className="flex h-48 w-32 items-center justify-center rounded-lg bg-white/20 shadow-xl md:h-60 md:w-40">
+                    <BookOpen className="h-8 w-8 text-white/40" />
+                  </div>
+                )}
               </div>
             </div>
           </div>
