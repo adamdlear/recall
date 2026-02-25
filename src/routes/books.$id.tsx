@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { ArrowLeft, BookOpen, Badge, Layers, HelpCircle, ArrowRight } from 'lucide-react'
-import { Button } from '../components/ui/button'
 import { useQuery } from '@tanstack/react-query'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { ArrowLeft, ArrowRight, BookOpen, HelpCircle } from 'lucide-react'
+import { Button } from '../components/ui/button'
 import { app } from '../lib/api'
+import { bookColor } from '../lib/utils'
 
 export const Route = createFileRoute('/books/$id')({
   component: RouteComponent,
@@ -74,6 +75,7 @@ function RouteComponent() {
         {/* Book Header */}
         <section
           className="border-b border-border"
+          style={{ backgroundColor: bookColor(book.title) }}
         >
           <div className="mx-auto max-w-3xl px-6 py-12 md:py-16">
             <Link

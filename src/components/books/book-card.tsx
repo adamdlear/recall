@@ -1,7 +1,8 @@
 "use client"
 
-import { createFileRoute, Link } from '@tanstack/react-router'
 import { Book } from "@/server/modules/books/model"
+import { bookColor } from '@/src/lib/utils'
+import { Link } from '@tanstack/react-router'
 import { ArrowRight } from "lucide-react"
 
 export function BookCard({ book }: { book: Book }) {
@@ -13,8 +14,9 @@ export function BookCard({ book }: { book: Book }) {
     >
       <div
         className="flex h-40 items-end p-5"
+        style={{ backgroundColor: bookColor(book.title) }}
       >
-        <h3 className="font-serif text-xl font-bold leading-tight text-balance">
+        <h3 className="font-serif text-xl font-bold leading-tight text-white text-balance">
           {book.title}
         </h3>
       </div>
