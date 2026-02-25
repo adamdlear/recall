@@ -10,7 +10,7 @@
 		"build": "tsr generate && vite build",
 		"start": "bun run app.ts",
 		"generate-routes": "tsr generate",
-		"db:seed": "bun run ./src/db/seed.ts",
+		"db:seed": "bun run ./scripts/seed-db.ts",
 		"db:migrate": "bun drizzle-kit push",
 		"format": "biome format --write ."
 	},

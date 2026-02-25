@@ -1,8 +1,8 @@
-import { app } from '../lib/api'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { BookOpen, Brain, Award } from 'lucide-react'
-import { QuizCard } from '../components/quizzes/quiz-card'
+import { Award, BookOpen, Brain } from 'lucide-react'
+import { BookCard } from '../components/books/book-card'
+import { app } from '../lib/api'
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
@@ -10,13 +10,13 @@ export const Route = createFileRoute('/')({
 
 function RouteComponent() {
   const { data, isLoading } = useQuery({
-    queryKey: ["quizzes"],
+    queryKey: ["books"],
     queryFn: async () => {
-      return await app.api.quizzes.get()
+      return (await app.api.books.get()).data
     }
   })
 
-  console.log("data", data);
+  const categories = [...new Set(data?.map(b => b.category))]
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,29 +73,30 @@ function RouteComponent() {
 
         {/* Book Grid */}
         <section className="mx-auto max-w-6xl px-6 py-12 md:py-16">
-          {/*   <div className="flex flex-col gap-10"> */}
-          {/*     {categories.map((category) => ( */}
-          {/*       <div key={category}> */}
-          {/*         <div className="mb-5 flex items-center gap-3"> */}
-          {/*           <h2 className="font-serif text-xl font-bold text-foreground"> */}
-          {/*             {category} */}
-          {/*           </h2> */}
-          {/*           <div className="h-px flex-1 bg-border" /> */}
-          {/*           <span className="text-xs font-medium text-muted-foreground"> */}
-          {/*             {books.filter((b) => b.category === category).length}{" "} */}
-          {/*             {books.filter((b) => b.category === category).length === 1 */}
-          {/*               ? "book" */}
-          {/*               : "books"} */}
-          {/*           </span> */}
-          {/*         </div> */}
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {data?.data?.map((book) => (
-              <QuizCard key={book.id} quiz={book} />
+          <div className="flex flex-col gap-10">
+            {categories.map((category) => (
+              <div key={category}>
+                <div className="mb-5 flex items-center gap-3">
+                  <h2 className="font-serif text-xl font-bold text-foreground">
+                    {category}
+                  </h2>
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {data?.filter((b) => b.category === category).length}{" "}
+                    {data?.filter((b) => b.category === category).length === 1
+                      ? "book"
+                      : "books"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {data?.filter((b) => b.category === category)
+                    .map((book) => (
+                      <BookCard key={book.id} book={book} />
+                    ))}
+                </div>
+              </div>
             ))}
           </div>
-          {/*       </div> */}
-          {/*     ))} */}
-          {/*   </div> */}
         </section>
       </main>
     </div>

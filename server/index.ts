@@ -2,6 +2,7 @@ import { cors } from "@elysiajs/cors";
 import openapi from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 import { OpenAPI, auth } from "./lib/auth";
+import { books } from "./modules/books";
 import { quizzes } from "./modules/quizzes";
 
 const app = new Elysia()
@@ -21,10 +22,8 @@ const app = new Elysia()
 	)
 	.get("/api/auth/*", ({ request }) => auth.handler(request))
 	.post("/api/auth/*", ({ request }) => auth.handler(request))
-	.use(quizzes)
-	.get("/api/hello", () => ({
-		message: "Hello from Elysia 🚀",
-	}));
+	.use(books)
+	.use(quizzes);
 
 export { app as apiRouter };
 export type App = typeof app;
