@@ -4,10 +4,10 @@ import { eq } from "drizzle-orm";
 
 export class QuizzesService {
 	static async listQuizzes() {
-		return db.select().from(quizzes);
+		return await db.select().from(quizzes);
 	}
 
 	static async getQuizById(id: string) {
-		return db.select().from(quizzes).where(eq(quizzes.id, id));
+		return await db.select().from(quizzes).where(eq(quizzes.id, id));
 	}
 }
