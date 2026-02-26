@@ -19,6 +19,16 @@ function RouteComponent() {
     }
   })
 
+  const { data: quizzes } = useQuery({
+    queryKey: ["book-quizzes", id],
+    queryFn: async () => {
+      const res = await app.api.books({ id }).quizzes.get()
+      return res.data
+    },
+  })
+
+  const quiz = quizzes?.[0]
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -145,12 +155,18 @@ function RouteComponent() {
                     into one comprehensive quiz.
                   </p>
                 </div>
-                <Button asChild className="gap-2 shrink-0">
-                  <Link to="/" >
-                    Start Full Quiz
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
+                {quiz ? (
+                  <Button asChild className="gap-2 shrink-0">
+                    <Link to="/quiz/$id" params={{ id: quiz.id }}>
+                      Start Full Quiz
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button disabled className="gap-2 shrink-0">
+                    No Quiz Available
+                  </Button>
+                )}
               </div>
             </div>
           </div>
