@@ -127,6 +127,7 @@ export const choices = pgTable("choices", {
     .notNull()
     .references(() => questions.id, { onDelete: "cascade" }),
   choiceText: text("choice_text").notNull(),
+  explanation: text("explanation"),
   isCorrect: boolean("is_correct").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()

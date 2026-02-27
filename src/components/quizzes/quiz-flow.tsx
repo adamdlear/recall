@@ -348,7 +348,7 @@ export function QuizFlow({
             ) : (
               <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
             )}
-            <div>
+            <div className="flex flex-col gap-1.5">
               <p
                 className={cn(
                   "text-sm font-bold",
@@ -357,6 +357,11 @@ export function QuizFlow({
               >
                 {isCorrect ? "Correct!" : "Incorrect"}
               </p>
+              {selectedOption !== null && question.choices[selectedOption]?.explanation && (
+                <p className="text-sm leading-relaxed text-foreground/80">
+                  {question.choices[selectedOption].explanation}
+                </p>
+              )}
             </div>
           </div>
         </div>
