@@ -1,4 +1,4 @@
-import { boolean, index, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, index, jsonb, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -137,3 +137,23 @@ export const choices = pgTable("choices", {
     .defaultNow()
     .$onUpdate(() => new Date()),
 });
+
+export interface SessionAnswer {
+  questionId: string
+  choiceId: string
+  isCorrect: boolean
+}
+
+export const quizSessions = pgTable("quiz_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  quizId: uuid("quiz_id").notNull().references(() => quizzes.id, { onDelete: "cascade" }),
+  questionOrder: jsonb("question_order").$type<string[]>().notNull(),
+  answers: jsonb("answers").$type<SessionAnswer[]>().notNull().default([]),
+  status: text("status", { enum: ["in_progress", "completed"] }).notNull().default("in_progress"),
+  startedAt: timestamp("started_at", { withTimezone: true }).notNull().defaultNow(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+    .$onUpdate(() => new Date()),
+})

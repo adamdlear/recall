@@ -1,24 +1,22 @@
-import { useState, useCallback } from "react"
-import { useNavigate } from "@tanstack/react-router"
-import {
-  CheckCircle2,
-  XCircle,
-  ArrowRight,
-  ArrowLeft,
-  RotateCcw,
-  BookOpen,
-} from "lucide-react"
 import type { Book } from "@/server/modules/books/model"
-import type { Quiz, QuestionWithChoices } from "@/server/modules/quizzes/model"
+import type { SessionAnswer } from "@/server/modules/quiz-sessions/model"
+import type { QuestionWithChoices, Quiz } from "@/server/modules/quizzes/model"
 import { Button } from "@/src/components/ui/button"
 import { Progress } from "@/src/components/ui/progress"
-import { cn, bookColor } from "@/src/lib/utils"
-
-interface UserAnswer {
-  questionId: string
-  selectedAnswer: number
-  isCorrect: boolean
-}
+import { app } from "@/src/lib/api"
+import { authClient } from "@/src/lib/auth-client"
+import { bookColor, cn } from "@/src/lib/utils"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useNavigate } from "@tanstack/react-router"
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  RotateCcw,
+  XCircle,
+} from "lucide-react"
+import { useCallback, useEffect, useState } from "react"
 
 type QuizPhase = "intro" | "question" | "feedback" | "results"
 
@@ -32,13 +30,72 @@ export function QuizFlow({
   questions: QuestionWithChoices[]
 }) {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { data: authSession } = authClient.useSession()
+
   const [phase, setPhase] = useState<QuizPhase>("intro")
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
-  const [answers, setAnswers] = useState<UserAnswer[]>([])
+  const [sessionId, setSessionId] = useState<string | null>(null)
 
-  const question = questions[currentIndex]
-  const totalQuestions = questions.length
+  const { data: quizSession } = useQuery({
+    queryKey: ["quiz-session", sessionId],
+    queryFn: async () => {
+      const res = await app.api["quiz-sessions"]({ id: sessionId! }).get()
+      return res.data
+    },
+    enabled: sessionId !== null,
+  })
+
+  const { data: existingSession } = useQuery({
+    queryKey: ["quiz-session-active", quiz.id],
+    queryFn: async () => {
+      const res = await app.api["quiz-sessions"].get({ query: { quizId: quiz.id } })
+      return res.data ?? null
+    },
+    enabled: !!authSession && sessionId === null,
+  })
+
+  useEffect(() => {
+    if (!existingSession) return
+    const answers = existingSession.answers as SessionAnswer[]
+    queryClient.setQueryData(["quiz-session", existingSession.id], existingSession)
+    setSessionId(existingSession.id)
+    setCurrentIndex(answers.length)
+    setPhase(existingSession.status === "completed" ? "results" : "question")
+  }, [existingSession, queryClient])
+
+  const createSessionMutation = useMutation({
+    mutationFn: async () => {
+      const res = await app.api["quiz-sessions"].post({ quizId: quiz.id })
+      if (res.error) throw new Error(res.error.value?.message ?? "Failed to create session")
+      return res.data!
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["quiz-session", data.id], data)
+      setSessionId(data.id)
+      setPhase("question")
+    },
+  })
+
+  const submitAnswerMutation = useMutation({
+    mutationFn: async ({ questionId, choiceId }: { questionId: string; choiceId: string }) => {
+      const res = await app.api["quiz-sessions"]({ id: sessionId! }).answer.post({ questionId, choiceId })
+      if (res.error) throw new Error(res.error.value?.message ?? "Failed to submit answer")
+      return res.data!
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["quiz-session", sessionId], data)
+      setPhase("feedback")
+    },
+  })
+
+  const orderedQuestions = quizSession
+    ? (quizSession.questionOrder as string[]).map((id) => questions.find((q) => q.id === id)!).filter(Boolean)
+    : questions
+
+  const question = orderedQuestions[currentIndex]
+  const totalQuestions = orderedQuestions.length
   const progressValue =
     phase === "results"
       ? 100
@@ -46,7 +103,8 @@ export function QuizFlow({
         ? 0
         : ((currentIndex + (phase === "feedback" ? 1 : 0)) / totalQuestions) * 100
 
-  const score = answers.filter((a) => a.isCorrect).length
+  const sessionAnswers = (quizSession?.answers ?? []) as SessionAnswer[]
+  const score = sessionAnswers.filter((a) => a.isCorrect).length
   const percentage = Math.round((score / totalQuestions) * 100)
   const bookDetailUrl = `/books/${book?.id}`
 
@@ -60,35 +118,35 @@ export function QuizFlow({
 
   const handleSubmitAnswer = useCallback(() => {
     if (selectedOption === null || !question) return
-    const correctIndex = question.choices.findIndex((c) => c.isCorrect)
-    const isCorrect = selectedOption === correctIndex
-    setAnswers((prev) => [
-      ...prev,
-      {
-        questionId: question.id,
-        selectedAnswer: selectedOption,
-        isCorrect,
-      },
-    ])
-    setPhase("feedback")
-  }, [selectedOption, question])
+    const choiceId = question.choices[selectedOption]?.id
+    if (!choiceId) return
+    submitAnswerMutation.mutate({ questionId: question.id, choiceId })
+  }, [selectedOption, question, submitAnswerMutation])
 
   const handleNext = useCallback(() => {
-    if (currentIndex < totalQuestions - 1) {
+    if (quizSession?.status === "completed") {
+      setPhase("results")
+    } else if (currentIndex < totalQuestions - 1) {
       setCurrentIndex((i) => i + 1)
       setSelectedOption(null)
       setPhase("question")
-    } else {
-      setPhase("results")
     }
-  }, [currentIndex, totalQuestions])
+  }, [quizSession, currentIndex, totalQuestions])
 
   const handleRestart = useCallback(() => {
     setPhase("intro")
     setCurrentIndex(0)
     setSelectedOption(null)
-    setAnswers([])
+    setSessionId(null)
   }, [])
+
+  const handleStartQuiz = useCallback(() => {
+    if (!authSession) {
+      navigate({ to: "/login" })
+      return
+    }
+    createSessionMutation.mutate()
+  }, [authSession, createSessionMutation, navigate])
 
   // Intro screen
   if (phase === "intro") {
@@ -118,7 +176,12 @@ export function QuizFlow({
           <strong>{totalQuestions} questions</strong> to test and deepen your understanding.
         </p>
         <div className="flex items-center gap-3">
-          <Button size="lg" className="gap-2" onClick={() => setPhase("question")}>
+          <Button
+            size="lg"
+            className="gap-2"
+            onClick={handleStartQuiz}
+            disabled={createSessionMutation.isPending}
+          >
             Start Quiz
             <ArrowRight className="h-4 w-4" />
           </Button>
@@ -190,10 +253,11 @@ export function QuizFlow({
         {/* Detailed Review */}
         <div className="mt-10 flex flex-col gap-5">
           <h3 className="font-serif text-lg font-bold text-foreground">Review Your Answers</h3>
-          {questions.map((q, index) => {
-            const userAnswer = answers[index]
+          {orderedQuestions.map((q) => {
+            const userAnswer = sessionAnswers.find((a) => a.questionId === q.id)
             const isCorrect = userAnswer?.isCorrect
-            const correctIndex = q.choices.findIndex((c) => c.isCorrect)
+            const selectedChoice = q.choices.find((c) => c.id === userAnswer?.choiceId)
+            const correctChoice = q.choices.find((c) => c.isCorrect)
             return (
               <div
                 key={q.id}
@@ -222,14 +286,14 @@ export function QuizFlow({
                           isCorrect ? "text-success" : "text-destructive",
                         )}
                       >
-                        {q.choices[userAnswer?.selectedAnswer ?? 0]?.choiceText}
+                        {selectedChoice?.choiceText}
                       </span>
                     </p>
                     {!isCorrect && (
                       <p className="text-sm text-muted-foreground">
                         Correct answer:{" "}
                         <span className="font-medium text-success">
-                          {q.choices[correctIndex]?.choiceText}
+                          {correctChoice?.choiceText}
                         </span>
                       </p>
                     )}
@@ -372,14 +436,16 @@ export function QuizFlow({
         {phase === "question" ? (
           <Button
             onClick={handleSubmitAnswer}
-            disabled={selectedOption === null}
+            disabled={selectedOption === null || submitAnswerMutation.isPending}
             className="gap-2"
           >
             Submit Answer
           </Button>
         ) : (
           <Button onClick={handleNext} className="gap-2">
-            {currentIndex < totalQuestions - 1 ? (
+            {quizSession?.status === "completed" ? (
+              "View Results"
+            ) : currentIndex < totalQuestions - 1 ? (
               <>
                 Next Question
                 <ArrowRight className="h-4 w-4" />

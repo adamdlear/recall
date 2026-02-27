@@ -1,6 +1,6 @@
-import { QuizFlow } from '../components/quizzes/quiz-flow'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { QuizFlow } from '../components/quizzes/quiz-flow'
 import { app } from '../lib/api'
 
 export const Route = createFileRoute('/quiz/$id')({
