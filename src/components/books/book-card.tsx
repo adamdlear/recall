@@ -16,16 +16,6 @@ export function BookCard({ book }: { book: Book }) {
         className="relative flex h-40 items-end overflow-hidden p-5"
         style={{ backgroundColor: bookColor(book.title) }}
       >
-        {book.coverUrl && (
-          <>
-            <img
-              src={book.coverUrl}
-              alt={book.title}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          </>
-        )}
         <h3 className="relative font-serif text-xl font-bold leading-tight text-white text-balance">
           {book.title}
         </h3>

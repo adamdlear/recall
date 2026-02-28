@@ -14,6 +14,7 @@ async function seed() {
   const seedData = [
     {
       title: "Clean Code",
+      isbn: "9780132350884",
       author: "Robert C. Martin",
       category: "Software Engineering",
       description:
@@ -343,6 +344,7 @@ async function seed() {
     },
     {
       title: "The Pragmatic Programmer",
+      isbn: "9780135957059",
       author: "David Thomas & Andrew Hunt",
       category: "Software Engineering",
       description:
@@ -526,6 +528,7 @@ async function seed() {
     },
     {
       title: "Designing Data-Intensive Applications",
+      isbn: "9781449373320",
       author: "Martin Kleppmann",
       category: "Systems Design",
       description:
@@ -826,6 +829,7 @@ async function seed() {
     },
     {
       title: "Structure and Interpretation of Computer Programs",
+      isbn: "9780262510875",
       author: "Harold Abelson & Gerald Jay Sussman",
       category: "Computer Science",
       description:
@@ -988,6 +992,7 @@ async function seed() {
         author: bookData.author,
         category: bookData.category,
         description: bookData.description,
+        isbn: bookData.isbn,
       })
       .returning({ id: books.id });
 

@@ -3,6 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowLeft, ArrowRight, BookOpen, HelpCircle } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { app } from '../lib/api'
+import { useBookCover } from '../lib/use-book-cover'
 import { bookColor } from '../lib/utils'
 
 export const Route = createFileRoute('/books/$id')({
@@ -28,6 +29,7 @@ function RouteComponent() {
   })
 
   const quiz = quizzes?.[0]
+  const cover = useBookCover(book?.id, book?.coverUrl)
 
   if (isLoading) {
     return (
@@ -120,9 +122,9 @@ function RouteComponent() {
 
               {/* Cover image — stacks above text on mobile, floats right on desktop */}
               <div className="order-first shrink-0 md:order-last">
-                {book.coverUrl ? (
+                {cover ? (
                   <img
-                    src={book.coverUrl}
+                    src={cover}
                     alt={book.title}
                     className="h-48 w-32 rounded-lg object-cover shadow-xl md:h-60 md:w-40"
                   />

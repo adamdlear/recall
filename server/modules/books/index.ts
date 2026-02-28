@@ -5,5 +5,6 @@ import { QuizzesService } from "@/server/modules/quizzes/service";
 export const books = new Elysia({ prefix: "/api/books" })
   .get("/", BooksService.listBooks)
   .get("/:id", async ({ params: { id } }) => await BooksService.getBookById(id), { params: t.Object({ id: t.String() }) })
+  .get("/:id/cover", async ({ params: { id } }) => await BooksService.getBookCoverUrl(id), { params: t.Object({ id: t.String() }) })
   .get("/:id/quizzes", async ({ params: { id } }) => await QuizzesService.getQuizzesByBookId(id));
 
