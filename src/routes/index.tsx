@@ -1,18 +1,30 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Award, BookOpen, Brain } from 'lucide-react'
+import { BookSearch } from '../components/books/book-search'
 import { BooksGrid } from '../components/books/books-grid'
 import { app } from '../lib/api'
 
+type BookSearchParams = {
+  q?: string
+}
+
 export const Route = createFileRoute('/')({
   component: RouteComponent,
+  validateSearch: (search: Record<string, unknown>): BookSearchParams => {
+    return {
+      q: (search.q as string) || undefined
+    }
+  }
 })
 
 function RouteComponent() {
+  const { q } = Route.useSearch()
+
   const { data, isLoading } = useQuery({
     queryKey: ["books"],
     queryFn: async () => {
-      const res = await app.api.books.get()
+      const res = await app.api.books.get({ query: { q } })
       return res.data
     }
   })
@@ -68,6 +80,14 @@ function RouteComponent() {
               ))}
             </div>
           </div>
+        </section>
+
+        {/* Library Search Section */}
+        <section className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+          <h2 className="font-serif text-xl font-bold text-foreground">
+            Search the Library
+          </h2>
+          <BookSearch />
         </section>
 
         {/* Book Grid */}

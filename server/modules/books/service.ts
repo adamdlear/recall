@@ -1,10 +1,16 @@
 import { db } from "@/server/db";
 import { books } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
+import { Book } from "./model";
 
 export class BooksService {
-  static async listBooks() {
-    return await db.select().from(books);
+  static async listBooks(query?: string): Promise<Book[]> {
+    if (!query) {
+      return await db.select().from(books);
+    }
+    const titleResults = await db.select().from(books).where(eq(books.title, query))
+    const authorResults = await db.select().from(books).where(eq(books.author, query))
+    return [...titleResults, ...authorResults]
   }
 
   static async getBookById(id: string) {
