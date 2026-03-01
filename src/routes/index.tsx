@@ -22,7 +22,7 @@ function RouteComponent() {
   const { q } = Route.useSearch()
 
   const { data, isLoading } = useQuery({
-    queryKey: ["books"],
+    queryKey: ["books", q],
     queryFn: async () => {
       const res = await app.api.books.get({ query: { q } })
       return res.data
@@ -82,12 +82,16 @@ function RouteComponent() {
           </div>
         </section>
 
-        {/* Library Search Section */}
-        <section className="mx-auto max-w-6xl px-6 py-12 md:py-16">
-          <h2 className="font-serif text-xl font-bold text-foreground">
-            Search the Library
-          </h2>
-          <BookSearch />
+        {/* Library Search */}
+        <section className="border-b border-border bg-card">
+          <div className="mx-auto max-w-6xl px-6 py-8 md:py-10">
+            <div className="mx-auto max-w-xl">
+              <h2 className="mb-4 font-serif text-xl font-bold text-foreground">
+                Search the Library
+              </h2>
+              <BookSearch currentQuery={q} />
+            </div>
+          </div>
         </section>
 
         {/* Book Grid */}

@@ -1,6 +1,6 @@
 import { db } from "@/server/db";
 import { books } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, ilike, or } from "drizzle-orm";
 import { Book } from "./model";
 
 export class BooksService {
@@ -8,9 +8,10 @@ export class BooksService {
     if (!query) {
       return await db.select().from(books);
     }
-    const titleResults = await db.select().from(books).where(eq(books.title, query))
-    const authorResults = await db.select().from(books).where(eq(books.author, query))
-    return [...titleResults, ...authorResults]
+    return await db
+      .select()
+      .from(books)
+      .where(or(ilike(books.title, `%${query}%`), ilike(books.author, `%${query}%`)))
   }
 
   static async getBookById(id: string) {
