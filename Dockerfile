@@ -12,6 +12,7 @@ COPY ./app.ts ./app.ts
 COPY ./index.html ./index.html
 COPY ./vite.config.ts ./vite.config.ts
 COPY ./tsconfig.json ./tsconfig.json
+COPY ./drizzle.config.ts ./drizzle.config.ts
 COPY ./src ./src
 COPY ./server ./server
 
