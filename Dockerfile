@@ -33,9 +33,10 @@ COPY --from=build /app/dist dist
 COPY --from=build /app/server server
 COPY --from=build /app/app.ts app.ts
 COPY --from=build /app/tsconfig.json tsconfig.json
+COPY --from=build /app/drizzle.config.ts drizzle.config.ts
 
 ENV NODE_ENV=production
 
 EXPOSE 3000
 
-CMD ["bun", "run", "app.ts"]
+CMD ["sh", "-c", "bun run db:migrate && bun run app.ts"]
