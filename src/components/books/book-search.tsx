@@ -25,10 +25,11 @@ export function BookSearch({ currentQuery }: BookSearchProps) {
 
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+      <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
-        className="pl-9"
-        placeholder="Search by title or author…"
+        type="text"
+        className="w-full rounded-md border border-border/60 bg-card py-2.5 pl-10 pr-10 font-mono text-sm text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all"
+        placeholder="Search by title or author..."
         value={value}
         onChange={handleChange}
       />

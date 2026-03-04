@@ -10,29 +10,32 @@ export function BookCard({ book }: { book: Book }) {
     <Link
       to="/books/$id"
       params={{ id: book.id }}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+      className="group relative flex flex-col overflow-hidden rounded-lg border border-border/60 bg-card transition-all duration-200 hover:border-primary/50 hover:shadow-[0_0_24px_-4px] hover:shadow-primary/15"
     >
+      {/* Color bar */}
       <div
-        className="relative flex h-40 items-end overflow-hidden p-5"
+        className="h-1 w-full transition-all duration-300 group-hover:h-1.5"
         style={{ backgroundColor: bookColor(book.title) }}
-      >
-        <h3 className="relative font-serif text-xl font-bold leading-tight text-white text-balance">
-          {book.title}
-        </h3>
-      </div>
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        <p className="text-sm font-medium text-muted-foreground">
+      />
+
+      <div className="flex flex-1 flex-col gap-4 p-5">
+        {/* Header row */}
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-sm font-bold leading-snug text-foreground text-balance">
+            {book.title}
+          </h3>
+          <ArrowRight className="h-3.5 w-3.5 shrink-0 translate-x-0 text-muted-foreground/30 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-primary group-hover:opacity-100" />
+        </div>
+
+        {/* Author */}
+        <p className="font-mono text-xs text-muted-foreground">
           {book.author}
         </p>
-        <p className="text-sm leading-relaxed text-foreground/80">
+
+        {/* Description */}
+        <p className="text-xs leading-relaxed text-muted-foreground">
           {book.description}
         </p>
-        <div className="mt-auto flex items-center justify-between pt-3">
-          <span className="flex items-center gap-1 text-xs font-semibold text-primary opacity-0 transition-opacity group-hover:opacity-100">
-            Start
-            <ArrowRight className="h-3.5 w-3.5" />
-          </span>
-        </div>
       </div>
     </Link>
   )
