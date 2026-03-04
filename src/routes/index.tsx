@@ -4,6 +4,7 @@ import { Award, BookOpen, Brain } from 'lucide-react'
 import { BookSearch } from '../components/books/book-search'
 import { BooksGrid } from '../components/books/books-grid'
 import { app } from '../lib/api'
+import { ModeToggle } from '../components/theme-toggle'
 
 type BookSearchParams = {
   q?: string
@@ -99,6 +100,10 @@ function RouteComponent() {
           <BooksGrid books={data} isLoading={isLoading} />
         </section>
       </main>
+
+      <footer>
+        <ModeToggle />
+      </footer>
     </div>
   )
 }
