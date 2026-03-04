@@ -101,8 +101,10 @@ function RouteComponent() {
         </section>
       </main>
 
-      <footer>
-        <ModeToggle />
+      <footer className="border-t border-border bg-card">
+        <div className="mx-auto flex max-w-6xl items-center justify-center px-6 py-6">
+          <ModeToggle />
+        </div>
       </footer>
     </div>
   )
