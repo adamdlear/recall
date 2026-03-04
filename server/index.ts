@@ -19,6 +19,9 @@ const app = new Elysia()
 				components: await OpenAPI.components,
 				paths: await OpenAPI.getPaths(),
 			},
+			exclude: {
+				paths: ["", "/", "/*", "/api/auth/*"],
+			}
 		}),
 	)
 	.get("/api/auth/*", ({ request }) => auth.handler(request))
