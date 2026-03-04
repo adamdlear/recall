@@ -2,7 +2,7 @@ import Elysia, { t } from "elysia";
 import { BooksService } from "./service";
 import { QuizzesService } from "@/server/modules/quizzes/service";
 
-export const books = new Elysia({ prefix: "/api/books" })
+export const books = new Elysia({ prefix: "/api/books", detail: { tags: ["Books"] } })
   .get("/", async ({ query }) => await BooksService.listBooks(query.q), { query: t.Optional(t.Object({ q: t.Optional(t.String()) })) })
   .get("/:id", async ({ params: { id } }) => await BooksService.getBookById(id), { params: t.Object({ id: t.String() }) })
   .get("/:id/cover", async ({ params: { id } }) => await BooksService.getBookCoverUrl(id), { params: t.Object({ id: t.String() }) })

@@ -20,12 +20,12 @@ const app = new Elysia()
 				paths: await OpenAPI.getPaths(),
 			},
 			exclude: {
-				paths: ["", "/", "/*", "/api/auth/*"],
+				paths: ["", "/", "/*"],
 			}
 		}),
 	)
-	.get("/api/auth/*", ({ request }) => auth.handler(request))
-	.post("/api/auth/*", ({ request }) => auth.handler(request))
+	.get("/api/auth/*", ({ request }) => auth.handler(request), { detail: { hide: true } })
+	.post("/api/auth/*", ({ request }) => auth.handler(request), { detail: { hide: true } })
 	.use(books)
 	.use(quizzes)
 	.use(quizSessionsRouter);

@@ -2,7 +2,7 @@ import { auth } from "@/server/lib/auth"
 import Elysia, { t } from "elysia"
 import { QuizSessionsService } from "./service"
 
-export const quizSessionsRouter = new Elysia({ prefix: "/api/quiz-sessions" })
+export const quizSessionsRouter = new Elysia({ prefix: "/api/quiz-sessions", detail: { tags: ["Quiz Sessions"] } })
   .get(
     "/",
     async ({ request, query, status }) => {
