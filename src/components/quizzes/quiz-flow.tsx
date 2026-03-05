@@ -5,16 +5,18 @@ import { Button } from "@/src/components/ui/button"
 import { Progress } from "@/src/components/ui/progress"
 import { app } from "@/src/lib/api"
 import { authClient } from "@/src/lib/auth-client"
-import { bookColor, cn } from "@/src/lib/utils"
+import { cn } from "@/src/lib/utils"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import {
   ArrowLeft,
   ArrowRight,
-  BookOpen,
   CheckCircle2,
+  Lightbulb,
   RotateCcw,
+  Terminal,
   XCircle,
+  Zap,
 } from "lucide-react"
 import { useCallback, useEffect, useState } from "react"
 
@@ -148,154 +150,170 @@ export function QuizFlow({
     createSessionMutation.mutate()
   }, [authSession, createSessionMutation, navigate])
 
-  // Intro screen
+  // ── Intro ──────────────────────────────────────────────────────────────────
   if (phase === "intro") {
     return (
-      <div className="mx-auto flex max-w-2xl flex-col items-center gap-8 px-6 py-16 text-center">
-        <div
-          className="flex h-28 w-28 items-center justify-center rounded-2xl"
-          style={{ backgroundColor: book ? bookColor(book.title) : undefined }}
+      <div className="mx-auto flex max-w-2xl flex-col gap-8 px-6 py-14 md:py-20">
+        {/* Back link */}
+        <button
+          onClick={() => navigate({ to: bookDetailUrl })}
+          className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground w-fit"
         >
-          <BookOpen className="h-12 w-12 text-white" />
-        </div>
-        <div className="flex flex-col gap-2">
-          <p className="text-xs font-semibold tracking-wide text-primary uppercase">
+          <ArrowLeft className="h-3 w-3" />
+          {book?.title ?? "back"}
+        </button>
+
+        {/* Header */}
+        <div className="flex flex-col gap-3">
+          <span className="font-mono text-xs font-bold text-primary uppercase tracking-widest">
             {quiz.category}
-          </p>
-          <h1 className="font-serif text-3xl font-black tracking-tight text-foreground text-balance">
+          </span>
+          <h1 className="text-3xl font-bold leading-tight tracking-tight text-foreground md:text-4xl text-balance">
             {quiz.title}
           </h1>
           {book && (
-            <p className="text-base text-muted-foreground">
-              {book.title} by {book.author}
+            <p className="font-mono text-xs text-muted-foreground">
+              {book.title} · {book.author}
             </p>
           )}
         </div>
-        <p className="max-w-md text-sm leading-relaxed text-foreground/70">
-          {quiz.description} This quiz contains{" "}
-          <strong>{totalQuestions} questions</strong> to test and deepen your understanding.
-        </p>
+
+        {/* Description card */}
+        <div className="rounded-lg border border-border/60 bg-card p-5">
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {quiz.description}
+          </p>
+          <div className="mt-4 flex items-center gap-4 border-t border-border/40 pt-4">
+            <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
+              <Terminal className="h-3.5 w-3.5 text-primary" />
+              {totalQuestions} questions
+            </div>
+            <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
+              <Lightbulb className="h-3.5 w-3.5 text-primary" />
+              Explanation after every answer
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
         <div className="flex items-center gap-3">
           <Button
             size="lg"
-            className="gap-2"
+            className="gap-2 font-mono text-sm"
             onClick={handleStartQuiz}
             disabled={createSessionMutation.isPending}
           >
+            <Zap className="h-4 w-4" />
             Start Quiz
-            <ArrowRight className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="lg" onClick={() => navigate({ to: bookDetailUrl })}>
+          <Button
+            variant="outline"
+            size="lg"
+            className="font-mono text-sm"
+            onClick={() => navigate({ to: bookDetailUrl })}
+          >
             <ArrowLeft className="h-4 w-4" />
-            Back to Book
+            Back
           </Button>
         </div>
       </div>
     )
   }
 
-  // Results screen
+  // ── Results ────────────────────────────────────────────────────────────────
   if (phase === "results") {
+    const scoreColor =
+      percentage >= 80
+        ? "text-emerald-400"
+        : percentage >= 50
+          ? "text-amber-400"
+          : "text-rose-400"
+    const scoreBorder =
+      percentage >= 80
+        ? "border-emerald-400/30 bg-emerald-400/5"
+        : percentage >= 50
+          ? "border-amber-400/30 bg-amber-400/5"
+          : "border-rose-400/30 bg-rose-400/5"
+    const scoreLabel =
+      percentage >= 80 ? "Excellent" : percentage >= 50 ? "Good effort" : "Keep grinding"
+
     return (
       <div className="mx-auto max-w-2xl px-6 py-10">
-        <div className="flex flex-col items-center gap-6 text-center">
-          <div
-            className={cn(
-              "flex h-20 w-20 items-center justify-center rounded-full",
-              percentage >= 80
-                ? "bg-success/15"
-                : percentage >= 50
-                  ? "bg-chart-4/15"
-                  : "bg-destructive/15",
-            )}
-          >
-            <span
-              className={cn(
-                "text-3xl font-black",
-                percentage >= 80
-                  ? "text-success"
-                  : percentage >= 50
-                    ? "text-chart-4"
-                    : "text-destructive",
-              )}
-            >
-              {percentage}%
-            </span>
+        {/* Score card */}
+        <div className={cn("rounded-lg border p-8 text-center mb-8", scoreBorder)}>
+          <div className={cn("font-mono text-6xl font-black tabular-nums", scoreColor)}>
+            {percentage}%
           </div>
-          <div>
-            <h2 className="font-serif text-2xl font-bold text-foreground">
-              {percentage >= 80
-                ? "Excellent Work!"
-                : percentage >= 50
-                  ? "Good Effort!"
-                  : "Keep Learning!"}
-            </h2>
-            <p className="mt-1.5 text-sm text-muted-foreground">
-              You got <strong>{score}</strong> out of{" "}
-              <strong>{totalQuestions}</strong> questions correct on{" "}
-              <strong>
-                {quiz.category}: {quiz.title}
-              </strong>
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Button onClick={handleRestart} variant="outline" className="gap-2">
-              <RotateCcw className="h-4 w-4" />
-              Retake Quiz
+          <p className="mt-2 text-lg font-semibold text-foreground">{scoreLabel}</p>
+          <p className="mt-1 font-mono text-xs text-muted-foreground">
+            {score} / {totalQuestions} correct · {quiz.category}: {quiz.title}
+          </p>
+          <div className="mt-6 flex justify-center gap-3">
+            <Button variant="outline" className="gap-2 font-mono text-sm" onClick={handleRestart}>
+              <RotateCcw className="h-3.5 w-3.5" />
+              Retake
             </Button>
-            <Button onClick={() => navigate({ to: bookDetailUrl })} className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Book
+            <Button className="gap-2 font-mono text-sm" onClick={() => navigate({ to: bookDetailUrl })}>
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Back to book
             </Button>
           </div>
         </div>
 
-        {/* Detailed Review */}
-        <div className="mt-10 flex flex-col gap-5">
-          <h3 className="font-serif text-lg font-bold text-foreground">Review Your Answers</h3>
+        {/* Review */}
+        <div className="mb-3">
+          <h3 className="font-mono text-xs font-bold text-primary uppercase tracking-widest">
+            Review
+          </h3>
+        </div>
+        <div className="flex flex-col gap-4">
           {orderedQuestions.map((q) => {
             const userAnswer = sessionAnswers.find((a) => a.questionId === q.id)
             const isCorrect = userAnswer?.isCorrect
             const selectedChoice = q.choices.find((c) => c.id === userAnswer?.choiceId)
             const correctChoice = q.choices.find((c) => c.isCorrect)
+            const explanation = selectedChoice?.explanation ?? correctChoice?.explanation
             return (
               <div
                 key={q.id}
                 className={cn(
-                  "rounded-xl border p-5",
+                  "rounded-lg border p-4",
                   isCorrect
-                    ? "border-success/20 bg-success/5"
-                    : "border-destructive/20 bg-destructive/5",
+                    ? "border-emerald-400/20 bg-emerald-400/5"
+                    : "border-rose-400/20 bg-rose-400/5",
                 )}
               >
                 <div className="flex items-start gap-3">
                   {isCorrect ? (
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
                   ) : (
-                    <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+                    <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" />
                   )}
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 min-w-0">
                     <p className="text-sm font-semibold leading-snug text-foreground">
                       {q.questionText}
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-mono text-xs text-muted-foreground">
                       Your answer:{" "}
-                      <span
-                        className={cn(
-                          "font-medium",
-                          isCorrect ? "text-success" : "text-destructive",
-                        )}
-                      >
+                      <span className={cn("font-bold", isCorrect ? "text-emerald-400" : "text-rose-400")}>
                         {selectedChoice?.choiceText}
                       </span>
                     </p>
                     {!isCorrect && (
-                      <p className="text-sm text-muted-foreground">
-                        Correct answer:{" "}
-                        <span className="font-medium text-success">
+                      <p className="font-mono text-xs text-muted-foreground">
+                        Correct:{" "}
+                        <span className="font-bold text-emerald-400">
                           {correctChoice?.choiceText}
                         </span>
                       </p>
+                    )}
+                    {explanation && (
+                      <div className="mt-1 flex items-start gap-2 rounded-md border border-border/40 bg-background/60 p-3">
+                        <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+                        <p className="text-xs leading-relaxed text-muted-foreground">
+                          {explanation}
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -307,7 +325,7 @@ export function QuizFlow({
     )
   }
 
-  // Question + Feedback screen
+  // ── Question + Feedback ────────────────────────────────────────────────────
   if (!question) return null
 
   const correctIndex = question.choices.findIndex((c) => c.isCorrect)
@@ -316,74 +334,74 @@ export function QuizFlow({
   return (
     <div className="mx-auto max-w-2xl px-6 py-10">
       {/* Progress header */}
-      <div className="mb-8 flex flex-col gap-3">
-        <div className="flex items-center justify-between text-sm">
-          <span className="font-medium text-foreground">
-            Question {currentIndex + 1} of {totalQuestions}
+      <div className="mb-8 flex flex-col gap-2.5">
+        <div className="flex items-center justify-between">
+          <span className="font-mono text-xs text-muted-foreground">
+            {quiz.category} · {quiz.title}
           </span>
-          <span className="text-muted-foreground">{Math.round(progressValue)}% complete</span>
+          <span className="font-mono text-xs text-muted-foreground tabular-nums">
+            {currentIndex + 1} / {totalQuestions}
+          </span>
         </div>
-        <Progress value={progressValue} className="h-2" />
+        <Progress value={progressValue} className="h-1" />
       </div>
 
       {/* Question */}
-      <div className="mb-8">
-        <h2 className="font-serif text-xl font-bold leading-snug text-foreground text-pretty">
+      <div className="mb-7">
+        <div className="mb-3 font-mono text-xs font-bold text-primary uppercase tracking-widest">
+          Question {currentIndex + 1}
+        </div>
+        <h2 className="text-lg font-semibold leading-snug text-foreground text-pretty">
           {question.questionText}
         </h2>
       </div>
 
       {/* Options */}
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2.5">
         {question.choices.map((choice, index) => {
           const letter = String.fromCharCode(65 + index)
-          let optionStyle = ""
+          const isThisCorrect = index === correctIndex
+          const isThisSelected = index === selectedOption
+          const isThisWrong = phase === "feedback" && isThisSelected && !isThisCorrect
 
-          if (phase === "feedback") {
-            if (index === correctIndex) {
-              optionStyle = "border-success bg-success/10 ring-1 ring-success/30"
-            } else if (index === selectedOption && index !== correctIndex) {
-              optionStyle = "border-destructive bg-destructive/10 ring-1 ring-destructive/30"
-            } else {
-              optionStyle = "border-border bg-muted/30 opacity-60"
-            }
-          } else if (index === selectedOption) {
-            optionStyle = "border-primary bg-primary/5 ring-1 ring-primary/30"
-          } else {
-            optionStyle =
-              "border-border bg-card hover:border-primary/30 hover:bg-primary/5 cursor-pointer"
-          }
+          const containerStyle = cn(
+            "flex items-center gap-4 rounded-lg border p-4 text-left transition-all duration-150",
+            phase === "feedback"
+              ? isThisCorrect
+                ? "border-emerald-400/40 bg-emerald-400/10"
+                : isThisWrong
+                  ? "border-rose-400/40 bg-rose-400/10"
+                  : "border-border/30 bg-muted/20 opacity-50"
+              : isThisSelected
+                ? "border-primary/60 bg-primary/10 ring-1 ring-primary/30"
+                : "border-border/60 bg-card hover:border-primary/40 hover:bg-primary/5 cursor-pointer",
+          )
+
+          const keyStyle = cn(
+            "flex h-7 w-7 shrink-0 items-center justify-center rounded font-mono text-xs font-bold transition-colors",
+            phase === "feedback"
+              ? isThisCorrect
+                ? "bg-emerald-400 text-background"
+                : isThisWrong
+                  ? "bg-rose-400 text-background"
+                  : "bg-muted text-muted-foreground"
+              : isThisSelected
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground",
+          )
 
           return (
             <button
               key={choice.id}
               onClick={() => handleSelectOption(index)}
               disabled={phase === "feedback"}
-              className={cn(
-                "flex items-center gap-4 rounded-xl border p-4 text-left transition-all",
-                optionStyle,
-              )}
+              className={containerStyle}
             >
-              <span
-                className={cn(
-                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold",
-                  phase === "feedback" && index === correctIndex
-                    ? "bg-success text-success-foreground"
-                    : phase === "feedback" &&
-                      index === selectedOption &&
-                      index !== correctIndex
-                      ? "bg-destructive text-white"
-                      : index === selectedOption
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground",
-                )}
-              >
-                {phase === "feedback" && index === correctIndex ? (
-                  <CheckCircle2 className="h-4 w-4" />
-                ) : phase === "feedback" &&
-                  index === selectedOption &&
-                  index !== correctIndex ? (
-                  <XCircle className="h-4 w-4" />
+              <span className={keyStyle}>
+                {phase === "feedback" && isThisCorrect ? (
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                ) : phase === "feedback" && isThisWrong ? (
+                  <XCircle className="h-3.5 w-3.5" />
                 ) : (
                   letter
                 )}
@@ -396,33 +414,28 @@ export function QuizFlow({
         })}
       </div>
 
-      {/* Feedback Panel */}
+      {/* Feedback panel */}
       {phase === "feedback" && (
         <div
           className={cn(
-            "mt-6 rounded-xl border p-5",
+            "mt-5 rounded-lg border p-4",
             isCorrect
-              ? "border-success/20 bg-success/5"
-              : "border-destructive/20 bg-destructive/5",
+              ? "border-emerald-400/25 bg-emerald-400/10"
+              : "border-rose-400/25 bg-rose-400/10",
           )}
         >
           <div className="flex items-start gap-3">
             {isCorrect ? (
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
             ) : (
-              <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+              <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" />
             )}
-            <div className="flex flex-col gap-1.5">
-              <p
-                className={cn(
-                  "text-sm font-bold",
-                  isCorrect ? "text-success" : "text-destructive",
-                )}
-              >
-                {isCorrect ? "Correct!" : "Incorrect"}
+            <div>
+              <p className={cn("font-mono text-xs font-bold mb-1.5", isCorrect ? "text-emerald-400" : "text-rose-400")}>
+                {isCorrect ? "Correct" : "Incorrect"}
               </p>
               {selectedOption !== null && question.choices[selectedOption]?.explanation && (
-                <p className="text-sm leading-relaxed text-foreground/80">
+                <p className="text-sm leading-relaxed text-muted-foreground">
                   {question.choices[selectedOption].explanation}
                 </p>
               )}
@@ -432,27 +445,28 @@ export function QuizFlow({
       )}
 
       {/* Action buttons */}
-      <div className="mt-6 flex justify-end">
+      <div className="mt-6 flex items-center justify-between">
+        <button
+          onClick={() => navigate({ to: bookDetailUrl })}
+          className="font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          ← quit
+        </button>
         {phase === "question" ? (
           <Button
             onClick={handleSubmitAnswer}
             disabled={selectedOption === null || submitAnswerMutation.isPending}
-            className="gap-2"
+            className="gap-2 font-mono text-sm"
           >
-            Submit Answer
+            Submit
+            <ArrowRight className="h-3.5 w-3.5" />
           </Button>
         ) : (
-          <Button onClick={handleNext} className="gap-2">
-            {quizSession?.status === "completed" ? (
-              "View Results"
-            ) : currentIndex < totalQuestions - 1 ? (
-              <>
-                Next Question
-                <ArrowRight className="h-4 w-4" />
-              </>
-            ) : (
-              "View Results"
-            )}
+          <Button onClick={handleNext} className="gap-2 font-mono text-sm">
+            {quizSession?.status === "completed" || currentIndex >= totalQuestions - 1
+              ? "See results"
+              : "Next"}
+            <ArrowRight className="h-3.5 w-3.5" />
           </Button>
         )}
       </div>
