@@ -1,8 +1,8 @@
 import { db } from "@/server/db";
 import { books } from "@/server/db/schema";
+import { getBookCoverUrl, GoogleBook, searchBooks } from "@/server/lib/google-books-client";
 import { eq, ilike, or } from "drizzle-orm";
 import { Book } from "./model";
-import { getBookCoverUrl } from "@/server/lib/google-books-client";
 
 export class BooksService {
   static async listBooks(query?: string): Promise<Book[]> {
@@ -28,6 +28,13 @@ export class BooksService {
     if (!book.isbn) return { coverUrl: null };
     const coverUrl = await getBookCoverUrl(book.isbn)
     return { coverUrl };
+  }
+
+  static async searchGoogleBooks(q?: string): Promise<GoogleBook[]> {
+    if (!q) {
+      return []
+    }
+    return await searchBooks({ q: `${q} subject:computers` })
   }
 }
 

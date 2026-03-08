@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight, Award, BookOpen, Brain } from 'lucide-react'
 import { BookSearch } from '../components/books/book-search'
 import { BooksGrid } from '../components/books/books-grid'
-import { app } from '../lib/api'
+import { GoogleBooksSearch } from '../components/books/google-books-search'
 import { ModeToggle } from '../components/theme-toggle'
-import { books } from '@/server/db/schema'
+import { app } from '../lib/api'
 
 type BookSearchParams = {
   q?: string
@@ -135,6 +134,11 @@ function RouteComponent() {
         <section id="library" className="mx-auto max-w-5xl px-6 py-10 md:py-16">
           <BooksGrid books={data} isLoading={isLoading} />
         </section>
+
+        {/* Google Books fallback — shown when library has no results for a query */}
+        {q && !isLoading && data?.length === 0 && (
+          <GoogleBooksSearch query={q} />
+        )}
       </main>
 
       <footer className="border-t border-border bg-card">
