@@ -1,6 +1,8 @@
-import { useQuery } from "@tanstack/react-query"
-import { ExternalLink, BookOpen } from "lucide-react"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { ExternalLink, BookOpen, BookMarked, Check, Loader2 } from "lucide-react"
+import { Link } from "@tanstack/react-router"
 import { app } from "@/src/lib/api"
+import { authClient } from "@/src/lib/auth-client"
 import { bookColor } from "@/src/lib/utils"
 
 type GoogleBook = {
@@ -11,6 +13,58 @@ type GoogleBook = {
   coverUrl: string | null
   categories: string[]
   publishedDate: string | null
+}
+
+function RequestQuizButton({ googleId }: { googleId: string }) {
+  const { data: session, isPending: sessionLoading } = authClient.useSession()
+  const { mutate, isPending, isSuccess } = useMutation({
+    mutationFn: async () => {
+      const res = await app.api["book-requests"].post({ bookId: googleId })
+      return res.data
+    },
+  })
+
+  if (sessionLoading) return null
+
+  if (!session) {
+    return (
+      <Link
+        to="/login"
+        onClick={(e) => e.stopPropagation()}
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
+      >
+        <BookMarked className="h-3.5 w-3.5" />
+        Sign in to request
+      </Link>
+    )
+  }
+
+  if (isSuccess) {
+    return (
+      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary">
+        <Check className="h-3.5 w-3.5" />
+        Requested
+      </span>
+    )
+  }
+
+  return (
+    <button
+      onClick={(e) => {
+        e.preventDefault()
+        mutate()
+      }}
+      disabled={isPending}
+      className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-primary/50 hover:text-primary disabled:opacity-50"
+    >
+      {isPending ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      ) : (
+        <BookMarked className="h-3.5 w-3.5" />
+      )}
+      Request quiz
+    </button>
+  )
 }
 
 function GoogleBookCard({ book }: { book: GoogleBook }) {
@@ -42,6 +96,10 @@ function GoogleBookCard({ book }: { book: GoogleBook }) {
             {book.description}
           </p>
         )}
+
+        <div className="mt-auto pt-1">
+          <RequestQuizButton googleId={book.googleId} />
+        </div>
       </div>
     </a>
   )

@@ -2,6 +2,7 @@ import { cors } from "@elysiajs/cors";
 import openapi from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 import { OpenAPI, auth } from "./lib/auth";
+import { bookRequestsRouter } from "./modules/book-requests";
 import { books } from "./modules/books";
 import { quizSessionsRouter } from "./modules/quiz-sessions";
 import { quizzes } from "./modules/quizzes";
@@ -28,7 +29,8 @@ const app = new Elysia()
 	.post("/api/auth/*", ({ request }) => auth.handler(request), { detail: { hide: true } })
 	.use(books)
 	.use(quizzes)
-	.use(quizSessionsRouter);
+	.use(quizSessionsRouter)
+	.use(bookRequestsRouter);
 
 export { app as apiRouter };
 export type App = typeof app;

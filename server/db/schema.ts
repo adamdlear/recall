@@ -158,3 +158,13 @@ export const quizSessions = pgTable("quiz_sessions", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
     .$onUpdate(() => new Date()),
 })
+
+export const bookRequests = pgTable("book_requests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  bookId: text("book_id").notNull(),
+  requestedBy: text("requested_by").notNull().references(() => user.id, { onDelete: "cascade" }),
+  status: text("status", { enum: ["submitted", "under_review", "denied", "accepted"] }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+    .$onUpdate(() => new Date()),
+})
