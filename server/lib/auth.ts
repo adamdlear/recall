@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { openAPI } from "better-auth/plugins";
+import { openAPI, admin } from "better-auth/plugins";
 import { db } from "../db";
 import * as schema from "../db/schema";
 
@@ -11,7 +11,7 @@ export const auth = betterAuth({
 		provider: "pg",
 		schema,
 	}),
-	plugins: [openAPI()],
+	plugins: [openAPI(), admin()],
 	socialProviders: {
 		github: {
 			clientId: process.env.GITHUB_CLIENT_ID as string,
