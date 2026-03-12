@@ -2,6 +2,13 @@ import type { Book } from "@/server/modules/books/model"
 import type { SessionAnswer } from "@/server/modules/quiz-sessions/model"
 import type { QuestionWithChoices, Quiz } from "@/server/modules/quizzes/model"
 import { Button } from "@/src/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/components/ui/dialog"
 import { Progress } from "@/src/components/ui/progress"
 import { app } from "@/src/lib/api"
 import { authClient } from "@/src/lib/auth-client"
@@ -35,6 +42,7 @@ export function QuizFlow({
   const queryClient = useQueryClient()
   const { data: authSession } = authClient.useSession()
 
+  const [loginOpen, setLoginOpen] = useState(false)
   const [phase, setPhase] = useState<QuizPhase>("intro")
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
@@ -142,13 +150,20 @@ export function QuizFlow({
     setSessionId(null)
   }, [])
 
+  const handleSignIn = async () => {
+    await authClient.signIn.social({
+      provider: "github",
+      callbackURL: window.location.href,
+    })
+  }
+
   const handleStartQuiz = useCallback(() => {
     if (!authSession) {
-      navigate({ to: "/login" })
+      setLoginOpen(true)
       return
     }
     createSessionMutation.mutate()
-  }, [authSession, createSessionMutation, navigate])
+  }, [authSession, createSessionMutation])
 
   // ── Intro ──────────────────────────────────────────────────────────────────
   if (phase === "intro") {
@@ -197,15 +212,32 @@ export function QuizFlow({
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          <Button
-            size="lg"
-            className="gap-2 font-mono text-sm"
-            onClick={handleStartQuiz}
-            disabled={createSessionMutation.isPending}
-          >
-            <Zap className="h-4 w-4" />
-            Start Quiz
-          </Button>
+          <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
+            <Button
+              size="lg"
+              className="gap-2 font-mono text-sm"
+              onClick={handleStartQuiz}
+              disabled={createSessionMutation.isPending}
+            >
+              <Zap className="h-4 w-4" />
+              Start Quiz
+            </Button>
+            <DialogContent className="sm:max-w-sm bg-card/90 backdrop-blur-xl border-border/60">
+              <DialogHeader>
+                <span className="font-mono text-xs font-bold text-primary">—— auth</span>
+                <DialogTitle className="text-base">Sign in to start</DialogTitle>
+                <DialogDescription>
+                  Connect your GitHub account to track your quiz progress and scores.
+                </DialogDescription>
+              </DialogHeader>
+              <Button className="w-full gap-2" onClick={handleSignIn}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true" className="size-4 shrink-0">
+                  <path d="M32 0a32.021 32.021 0 0 0-10.1 62.4c1.6.3 2.2-.7 2.2-1.5v-6c-8.9 1.9-10.8-3.8-10.8-3.8-1.5-3.7-3.6-4.7-3.6-4.7-2.9-2 .2-1.9.2-1.9 3.2.2 4.9 3.3 4.9 3.3 2.9 4.9 7.5 3.5 9.3 2.7a6.93 6.93 0 0 1 2-4.3c-7.1-.8-14.6-3.6-14.6-15.8a12.27 12.27 0 0 1 3.3-8.6 11.965 11.965 0 0 1 .3-8.5s2.7-.9 8.8 3.3a30.873 30.873 0 0 1 8-1.1 30.292 30.292 0 0 1 8 1.1c6.1-4.1 8.8-3.3 8.8-3.3a11.965 11.965 0 0 1 .3 8.5 12.1 12.1 0 0 1 3.3 8.6c0 12.3-7.5 15-14.6 15.8a7.746 7.746 0 0 1 2.2 5.9v8.8c0 .9.6 1.8 2.2 1.5A32.021 32.021 0 0 0 32 0z" fill="currentColor" />
+                </svg>
+                Continue with GitHub
+              </Button>
+            </DialogContent>
+          </Dialog>
           <Button
             variant="outline"
             size="lg"
