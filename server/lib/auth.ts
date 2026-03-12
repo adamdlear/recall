@@ -43,3 +43,7 @@ export const OpenAPI = {
 		}) as Promise<any>,
 	components: getSchema().then(({ components }) => components) as Promise<any>,
 } as const;
+
+export async function userIsAdmin(role: string | null | undefined) {
+	return role === "admin"
+}
