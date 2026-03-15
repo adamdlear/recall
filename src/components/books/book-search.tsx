@@ -14,7 +14,7 @@ export function BookSearch({ currentQuery }: BookSearchProps) {
 
   useEffect(() => {
     timer.current = setTimeout(() => {
-      navigate({ search: { q: value || undefined } })
+      navigate({ search: { q: value || undefined }, resetScroll: false })
     }, 300)
     return () => clearTimeout(timer.current)
   }, [value])
