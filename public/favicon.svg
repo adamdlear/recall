@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background -->
+  <rect width="64" height="64" rx="13" fill="#0d1928"/>
+
+  <!-- Same pyramid layout, all blues — light to dark going down -->
+  <rect x="14" y="16" width="36" height="9" rx="2" fill="#5babf5"/>
+  <rect x="11" y="28" width="42" height="9" rx="2" fill="#3b8fe8"/>
+  <rect x="8"  y="40" width="48" height="9" rx="2" fill="#1a65bc"/>
+</svg>
